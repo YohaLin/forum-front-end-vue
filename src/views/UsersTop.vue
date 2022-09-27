@@ -9,7 +9,7 @@
       <div class="col-3" v-for="user in users" :key="user.id">
         <router-link :to="{ name:'user', params: {id: user.id}}">
           <img
-            src="貼上引用圖片網址，同學可自行選擇圖片進行實作"
+            src="https://i.imgur.com/58ImzMM.png"
             width="140px"
             height="140px"
           >

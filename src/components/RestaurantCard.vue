@@ -25,7 +25,7 @@
         <!-- v-on綁定事件，為了保險起見，只要是瀏覽器的事件，都跟著串上 stop.prevent -->
         <button
           v-if="restaurant.isFavorited"
-          @click.stop.prevent="deleteFavorite" 
+          @click.stop.prevent="deleteFavorite(restaurant.id)" 
           type="button"
           class="btn btn-danger btn-border favorite mr-2"
         >
@@ -34,7 +34,7 @@
         <!-- 注意在 v-else 上沒有任何的標記，它必需要緊接在 v-if 之後使用 -->
         <button
           v-else
-          @click.stop.prevent="addFavorite"
+          @click.stop.prevent="addFavorite(restaurant.id)"
           type="button"
           class="btn btn-primary btn-border favorite mr-2"
         >
@@ -65,6 +65,8 @@
 </template>
 
 <script>
+import usersAPI from './../apis/users'
+import { Toast } from './../utils/helpers'
 export default {
   // 資料不可以改變，呈現唯獨的方式
   props: {
@@ -80,18 +82,42 @@ export default {
     }
   },
   methods: {
-    addFavorite(){
+    async addFavorite(restaurantId){
       // isFavorited
-      this.restaurant = {
-        ...this.restaurant, // 保留餐廳內原有資料
-        isFavorited: true // 只改想改的地方
+      try{
+        const { data } = await usersAPI.addFavorite({restaurantId})
+        if(data.status === 'error') {
+          throw new Error(data.message)
+        }
+        this.restaurant = {
+          ...this.restaurant, // 保留餐廳內原有資料
+          isFavorited: true // 只改想改的地方
+        }
+      } catch(error){
+        console.log('error', error)
+        Toast.fire({
+          icon: 'error',
+          title: '無法將餐廳移除最愛，請稍後再試'
+        })
       }
     },
-    deleteFavorite() {
+    async deleteFavorite(restaurantId){
       // isFavorited
-      this.restaurant = {
-        ...this.restaurant, 
-        isFavorited: false
+      try{
+        const { data } = await usersAPI.deleteFavorite({restaurantId})
+        if(data.status === 'error') {
+          throw new Error(data.message)
+        }
+        this.restaurant = {
+          ...this.restaurant, // 保留餐廳內原有資料
+          isFavorited: false // 只改想改的地方
+        }
+      } catch(error){
+        console.log('error', error)
+        Toast.fire({
+          icon: 'error',
+          title: '無法將餐廳移除最愛，請稍後再試'
+        })
       }
     },
     addLike() {

@@ -9,3 +9,12 @@ export const fromNowFilter = {
     }
   }
 }
+
+// 照片跑不出來或無，就使用假圖片
+export const emptyImageFilter = {
+  filters: {
+    emptyImage (src) {
+      return src || 'https://fakeimg.pl/350x220/DFDFDF/?text=No+Image'
+    }
+  }
+}

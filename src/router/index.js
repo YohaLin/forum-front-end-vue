@@ -15,7 +15,7 @@ const routes = [
     // 當使用者直接到網站的 / 位置時，還是可以自動轉到 /restaurants，看到餐廳列表。
     path: '/',
     name: 'root',
-    redirect: '/restaurants'
+    redirect: '/signin'
   },
   {
     path: '/signin', // 網址字串
@@ -65,6 +65,46 @@ const routes = [
     path: '/users/:id',
     name: 'user',
     component: () => import('../views/User.vue')
+  },
+  {
+    path: '/users/:id/edit',
+    name: 'user-edit',
+    component: () => import('../views/UserEdit.vue')
+  },
+  {
+    path: '/admin',
+    exact: true, // 完全匹配到才會走這條路徑
+    redirect: '/admin/restaurants'
+  },
+  {
+    path: '/admin/users',
+    name: 'admin-users',
+    component: () => import('../views/AdminUsers.vue')
+  },
+  {
+    path: '/admin/restaurants',
+    name: 'admin-restaurants',
+    component: () => import('../views/AdminRestaurants.vue')
+  },
+  {
+    path:'/admin/restaurants/new',
+    name: 'admin-restaurant-new',
+    component: () => import('../views/AdminRestaurantNew.vue')
+  },
+  {
+    path: '/admin/restaurants/:id/edit',
+    name: 'admin-restaurant-edit',
+    component: () => import('../views/AdminRestaurantEdit.vue')
+  },
+  {
+    path: '/admin/restaurants/:id',
+    name: 'admin-restaurant',
+    component: () => import('../views/AdminRestaurant.vue')
+  },
+  {
+    path: '/admin/categories',
+    name: 'admin-categories',
+    component: () => import('../views/AdminCategories.vue')
   },
    // 因為是由上往下匹配的，所以以上都沒有匹配到，才會渲染NotFound.vue，所以要放在最下面，寫*字號：表示所有網址，也就是說不管使用者輸入什麼，只要找不到對應網頁，最後就會返回 NotFound 這個頁面。
   {
