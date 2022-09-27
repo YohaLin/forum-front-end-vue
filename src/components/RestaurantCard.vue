@@ -44,7 +44,7 @@
         <!-- v-on綁定事件，為了保險起見，只要是瀏覽器的事件，都跟著串上 stop.prevent -->
         <button
           v-if="restaurant.isLiked" 
-          @click.stop.prevent="deleteLike"
+          @click.stop.prevent="deleteLike(restaurant.id)"
           type="button"
           class="btn btn-danger like mr-2"
         >
@@ -53,7 +53,7 @@
         <!-- 注意在 v-else 上沒有任何的標記，它必需要緊接在 v-if 之後使用 -->
         <button
           v-else
-          @click.stop.prevent="addLike"
+          @click.stop.prevent="addLike(restaurant.id)"
           type="button"
           class="btn btn-primary like mr-2"
         >
@@ -120,18 +120,42 @@ export default {
         })
       }
     },
-    addLike() {
-      // isLiked
-      this.restaurant = {
-        ...this.restaurant,
-        isLiked: true
+    async addLike(restaurantId){
+      // isFavorited
+      try{
+        const { data } = await usersAPI.addLike({restaurantId})
+        if(data.status === 'error') {
+          throw new Error(data.message)
+        }
+        this.restaurant = {
+          ...this.restaurant, // 保留餐廳內原有資料
+          isLiked: true // 只改想改的地方
+        }
+      } catch(error){
+        console.log('error', error)
+        Toast.fire({
+          icon: 'error',
+          title: '無法將餐廳移除最愛，請稍後再試'
+        })
       }
     },
-    deleteLike() {
-      // isLiked
-      this.restaurant = {
-        ...this.restaurant,
-        isLiked: false
+    async deleteLike(restaurantId){
+      // isFavorited
+      try{
+        const { data } = await usersAPI.deleteLike({restaurantId})
+        if(data.status === 'error') {
+          throw new Error(data.message)
+        }
+        this.restaurant = {
+          ...this.restaurant, // 保留餐廳內原有資料
+          isLiked: false // 只改想改的地方
+        }
+      } catch(error){
+        console.log('error', error)
+        Toast.fire({
+          icon: 'error',
+          title: '無法將餐廳移除最愛，請稍後再試'
+        })
       }
     },
   }

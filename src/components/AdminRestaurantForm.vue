@@ -1,5 +1,5 @@
 <template>
-  <form @submit.stop.prevent="handleSubmit">
+  <form @submit.stop.prevent="handleSubmit" v-show="isLoading">
     <div class="form-group">
       <label for="name">Name</label>
       <input
@@ -97,57 +97,18 @@
       />
     </div>
 
-    <button type="submit" class="btn btn-primary">送出</button>
+    <button 
+      type="submit" 
+      class="btn btn-primary"
+      disabled="isProcessing"
+    >{{isProcesing? '處理中...' : '送出'}}</button>
   </form>
 </template>
 
 <script>
-const dummyData = {
-  categories: [
-    {
-      id: 1,
-      name: "中式料理",
-      createdAt: "2022-09-12T12:57:08.000Z",
-      updatedAt: "2022-09-12T12:57:08.000Z",
-    },
-    {
-      id: 2,
-      name: "日本料理",
-      createdAt: "2022-09-12T12:57:08.000Z",
-      updatedAt: "2022-09-12T12:57:08.000Z",
-    },
-    {
-      id: 3,
-      name: "義大利料理",
-      createdAt: "2022-09-12T12:57:08.000Z",
-      updatedAt: "2022-09-12T12:57:08.000Z",
-    },
-    {
-      id: 4,
-      name: "墨西哥料理",
-      createdAt: "2022-09-12T12:57:08.000Z",
-      updatedAt: "2022-09-12T12:57:08.000Z",
-    },
-    {
-      id: 5,
-      name: "素食料理",
-      createdAt: "2022-09-12T12:57:08.000Z",
-      updatedAt: "2022-09-12T12:57:08.000Z",
-    },
-    {
-      id: 6,
-      name: "美式料理",
-      createdAt: "2022-09-12T12:57:08.000Z",
-      updatedAt: "2022-09-12T12:57:08.000Z",
-    },
-    {
-      id: 7,
-      name: "複合式料理",
-      createdAt: "2022-09-12T12:57:08.000Z",
-      updatedAt: "2022-09-12T12:57:08.000Z",
-    },
-  ],
-};
+import adminAPI from './../apis/admin'
+import { Toast } from './../utils/helpers'
+
 export default {
   name: 'AdminRestaurantForm',
   props: {
@@ -167,6 +128,10 @@ export default {
           categoryId: '',
         }
       }
+    },
+    isProcessing: {
+      type: Boolean,
+      default: false
     }
   },
   data(){
@@ -177,7 +142,9 @@ export default {
       // 2. 如果使用者按新增資料就會跑restaurant(空表單)，而initialRestaurant的資料也都是空的
       restaurant: {
         ...this.initialRestaurant
-      }
+      },
+      // 讀取中(正在從後端串接資料，不讓畫面被渲染)
+      isLoading: true
     }
   },created(){
     this.fetchCategories()
@@ -189,8 +156,24 @@ export default {
     }
   },
   methods: {
-    fetchCategories(){
-      this.categories = dummyData.categories
+    async fetchCategories(){
+      try{
+        const { data } = adminAPI.categories.get()
+
+        if(data.status === 'error'){
+          throw new Error(data.message)
+        }
+        this.categories = data.categories
+        this.isLoading = true // 當取得後端API後可以渲染畫面
+      } catch(error) {
+        console.log(error)
+        this.isLoading = true // 當讀取失敗也要渲染畫面
+        Toast.fire({
+          icon: 'error',
+          title: '無法取得餐廳類別，請稍後再試'
+        })
+      }
+      
     },
     handleFileChange(e) {
       const {files } = e.target
@@ -206,6 +189,21 @@ export default {
       
     },
     handleSubmit(e) {
+      if(!this.restaurants.name){
+        Toast.fire({
+          icon: 'warning',
+          title: '請填寫餐廳名稱'
+        })
+        return
+      }else if(!this.restaurants.categoryId){
+        Toast.fire({
+          icon: 'warning',
+          title: '請選擇餐廳類別'
+        })
+        return
+      }
+
+
       const form = e.target
       // new FormData(form) 來產生物件實例，存放在 formData 變數裡
       const formData = new FormData(form)

@@ -14,6 +14,9 @@ export default {
     })
   },
   getFeeds(){
-    return apiHelper.get('/restaurants/feeds')
+    return apiHelper.get('/restaurants/feeds',{
+      // JWT裡面內建的取得token的方法
+      headers: { Authorization: `Bearer ${getToken()}`}
+    })
   }
 }
