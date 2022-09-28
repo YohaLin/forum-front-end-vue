@@ -6,8 +6,19 @@ import NotFound from '../views/NotFound.vue'
 import SignIn from '../views/SignIn.vue'
 import SignUp from '../views/SignUp.vue'
 import Restaurants from '../views/Restaurants.vue'
+import store from './../store'
 
 Vue.use(VueRouter)
+
+const authorizeIsAdmin = (to, from, next) => {
+      console.log(to, from)
+      const currentUser = store.state.currentUser
+      if(currentUser && !currentUser.isAdmin) {
+        next('/not-found')
+        return
+      }
+      next()
+    }
 
 // 不同的路由，讓使用者看到不同的組件是什麼，注意形式是 陣列 X 物件 [ {...},{...},{...} ]
 const routes = [
@@ -15,7 +26,10 @@ const routes = [
     // 當使用者直接到網站的 / 位置時，還是可以自動轉到 /restaurants，看到餐廳列表。
     path: '/',
     name: 'root',
-    redirect: '/signin'
+    redirect: '/signin',
+    beforeEnter:(to) => {
+      console.log(to)
+    }
   },
   {
     path: '/signin', // 網址字串
@@ -74,37 +88,44 @@ const routes = [
   {
     path: '/admin',
     exact: true, // 完全匹配到才會走這條路徑
-    redirect: '/admin/restaurants'
+    redirect: '/admin/restaurants',
+    beforeEnter: authorizeIsAdmin
   },
   {
     path: '/admin/users',
     name: 'admin-users',
-    component: () => import('../views/AdminUsers.vue')
+    component: () => import('../views/AdminUsers.vue'),
+    beforeEnter: authorizeIsAdmin
   },
   {
     path: '/admin/restaurants',
     name: 'admin-restaurants',
-    component: () => import('../views/AdminRestaurants.vue')
+    component: () => import('../views/AdminRestaurants.vue'),
+    beforeEnter: authorizeIsAdmin
   },
   {
     path:'/admin/restaurants/new',
     name: 'admin-restaurant-new',
-    component: () => import('../views/AdminRestaurantNew.vue')
+    component: () => import('../views/AdminRestaurantNew.vue'),
+    beforeEnter: authorizeIsAdmin
   },
   {
     path: '/admin/restaurants/:id/edit',
     name: 'admin-restaurant-edit',
-    component: () => import('../views/AdminRestaurantEdit.vue')
+    component: () => import('../views/AdminRestaurantEdit.vue'),
+    beforeEnter: authorizeIsAdmin
   },
   {
     path: '/admin/restaurants/:id',
     name: 'admin-restaurant',
-    component: () => import('../views/AdminRestaurant.vue')
+    component: () => import('../views/AdminRestaurant.vue'),
+    beforeEnter: authorizeIsAdmin
   },
   {
     path: '/admin/categories',
     name: 'admin-categories',
-    component: () => import('../views/AdminCategories.vue')
+    component: () => import('../views/AdminCategories.vue'),
+    beforeEnter: authorizeIsAdmin
   },
    // 因為是由上往下匹配的，所以以上都沒有匹配到，才會渲染NotFound.vue，所以要放在最下面，寫*字號：表示所有網址，也就是說不管使用者輸入什麼，只要找不到對應網頁，最後就會返回 NotFound 這個頁面。
   {
@@ -119,6 +140,33 @@ const router = new VueRouter({
   // mode: 'history', // 在沒有後端伺服器的情況下，使用history mode，當使用者的網誌輸入http://.../about，這時候就會找不到，因為有前端框架的原因，只會知道要從根目錄開始渲染，不能跳過根目錄直接取得about頁面的資料！
   linkExactActiveClass: 'active', // 將.router-link-exact-active改成 .active，就可以取得bs的樣式，修改class name的概念
   routes
+})
+
+router.beforeEach(async (to, from, next) => {
+  // 從localStorage 取出 token
+  const token = localStorage.getItem('token')
+  const tokenInStore = store.state.token
+
+  let isAuthenticated = store.state.isAuthenticated
+  // (1)有token & (2)存在store中的token不一樣時 的情況下才向後端驗證
+  if(token && token !== tokenInStore) {
+    isAuthenticated  = await store.dispatch('fetchCurrentUser')
+  }
+
+  const pathsWithoutAuthentication = ['sign-in', 'sign-up']
+
+  // 如果token無效，則轉址到登入頁， 沒有後面to.name的判斷式會造成無窮迴圈
+  if(!isAuthenticated && !pathsWithoutAuthentication.includes(to.name)){
+    next('/signin')
+    return
+  }
+
+  // 如果token有效，則轉址到餐廳論壇頁， to.name...沒有這句會造成無窮迴圈
+  if(isAuthenticated && pathsWithoutAuthentication.includes(to.name)){
+    next('/restaurants')
+    return
+  }
+  next()
 })
 
 export default router

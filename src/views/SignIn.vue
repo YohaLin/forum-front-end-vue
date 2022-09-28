@@ -103,8 +103,13 @@ export default {
         if (data.status === "error") {
           throw new Error(data.message);
         }
+
         // 將 token 存放在 localStorage 內
         localStorage.setItem("token", data.token);
+
+        // 呼叫vuex中的mutations方法，把使用者資會存到vuex的state中
+        this.$store.commit('setCurrentUser', data.user)
+        
         // 成功登入後轉址到餐廳首頁；因為成功登入就會轉址，所以不用還原 isProcessing 的狀態
         this.$router.push("/restaurants");
       } catch (error) {

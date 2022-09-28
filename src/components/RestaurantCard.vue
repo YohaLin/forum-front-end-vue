@@ -83,6 +83,7 @@ export default {
   },
   methods: {
     async addFavorite(restaurantId){
+      
       // isFavorited
       try{
         const { data } = await usersAPI.addFavorite({restaurantId})

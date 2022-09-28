@@ -22,7 +22,10 @@
           <router-link :to="{name:'user', params: {id:currentUser.id}}" class="text-white mr-3">
             {{currentUser.name || '使用者'}} 您好
           </router-link>
-          <button type="button" class="btn btn-sm btn-outline-success my-2 my-sm-0">
+          <button 
+            type="button" 
+            class="btn btn-sm btn-outline-success my-2 my-sm-0"
+            @click.stop.prevent="logout">
             登出
           </button>
         </template>
@@ -33,46 +36,18 @@
 
 <script>
 /* eslint-disable */
-// seed data:模擬API回傳的內容，此為假資料(預設資料)
-const dummyUser = {
-  currentUser: {
-    id: 1,
-    name: '管理者',
-    email: 'root@example.com',
-    image: 'https://i.pravatar.cc/300',
-    isAdmin: true
-  },
-  isAuthenticated: true
-}
+import { mapState } from 'vuex'
 
 export default {
-  data() {
-    return {
-      // 這是在使用者未登入的情況下，Navbar 預設的空資料，他的登入狀態是 false，一旦接受到外部資料，這組 currentUser 就會被覆寫。
-      currentUser: {
-        id: -1,
-        name: '',
-        email: '',
-        image: '',
-        isAdmin: false // 使用者具有管理員權限 or not
-      },
-      isAuthenticated: false // 登入 or not
-    }
+  computed: {
+    ...mapState(['currentUser', 'isAuthenticated'])
   },
   methods: {
-    // 會向後端API拉取資料
-    fetchUser() {
-      this.currentUser = {
-        ...this.currentUser, // 類似預設值
-        ...dummyUser.currentUser // 後面會覆蓋過前面的資料，有重複覆蓋，沒覆蓋則保留預設值
-      }
-      this.isAuthenticated = dummyUser.isAuthenticated
+    logout(){
+      this.$store.commit('revokeAuthentication')
+      // 登出之後導入到登入頁面
+      this.$router.push('/signin')
     }
-  },
-  created() {
-    console.log('fetchUser')
-    this.fetchUser()
   }
-
 }
 </script>

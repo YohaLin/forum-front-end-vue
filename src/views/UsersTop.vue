@@ -69,7 +69,7 @@ export default {
           id: user.id,
           name: user.name,
           image: user.image,
-          followerCount: user.FollowerCount,
+          FollowerCount: user.FollowerCount,
           isFollowed: user.isFollowed,
         }));
       } catch (error) {
@@ -94,7 +94,7 @@ export default {
           } else {
             return {
               ...user,
-              followerCount: user.followerCount - 1,
+              FollowerCount: user.FollowerCount - 1,
               isFollowed: false,
             };
           }
@@ -122,7 +122,7 @@ export default {
           } else {
             return {
               ...user,
-              followerCount: user.followerCount + 1,
+              FollowerCount: user.FollowerCount + 1,
               isFollowed: true,
             };
           }

@@ -1,12 +1,14 @@
 <template>
   <div class="container py-5">
-    <AdminRestaurantForm :initialRestaurant="restaurant" @after-submit="handleAfterSubmit" />
+    <AdminRestaurantForm :initialRestaurant="restaurant" @after-submit="handleAfterSubmit" :isProcessing="isProcessing"/>
   </div>
 </template>
 
 <script>
   /*eslint-disable*/
 import AdminRestaurantForm from "../components/AdminRestaurantForm.vue";
+import adminAPI from './../apis/admin'
+import { Toast } from './../utils/helpers'
 
 const dummyData = {
   restaurant: {
@@ -49,32 +51,65 @@ export default {
         image: " ",
         categoryId: '',
       },
+      isProcessing: false
     };
   },
   created(){
     const { id } = this.$route.params
     this.fetchRestaurant(id)
   },
+  beforeRouteUpdate(to, from, next){
+    // 路由改變時重新抓取資料
+    const { id } = to.params
+    this.fetchRestaurant(id)
+    next()
+  },
   methods: {
-    handleAfterSubmit(formData) {
-      // 透過 API 將表單資料送到伺服器
-      for (let [name, value] of formData.entries()) {
-        console.log(name + ": " + value);
+    async handleAfterSubmit (formData) {
+      try {
+        this.isProcessing = true
+        const { data } = await adminAPI.restaurants.update({
+          restaurantId: this.restaurant.id,
+          formData
+        })
+
+        if (data.status === 'error') {
+          throw new Error(data.message)
+        }
+
+        this.$router.push({ name: 'admin-restaurants' })
+      } catch (error) {
+        this.isProcessing = false
+        Toast.fire({
+          icon: 'error',
+          title: '無法更新餐廳資料，請稍後再試'
+        })
       }
     },
-    fetchRestaurant(restaurantId){
-      const { restaurant } = dummyData
-      const { id, name, tel, address, opening_hours: openingHours, description, image, CategoryId: categoryId} = restaurant
-      this.restaurant = {
-        ...this.restaurant,
-        id,
-        name,
-        tel,
-        address,
-        openingHours,
-        description,
-        image,
-        categoryId
+    async fetchRestaurant(restaurantId){
+      try{
+        const { data } = await adminAPI.restaurants.getDetail({restaurantId})
+        if (data.status === 'error') {
+          throw new Error(data.message)
+        }
+        const { id, name, tel, address, opening_hours: openingHours, description, image, CategoryId: categoryId} = data.restaurant
+        this.restaurant = {
+          ...this.restaurant,
+          id,
+          name,
+          tel,
+          address,
+          openingHours,
+          description,
+          image,
+          categoryId
+        }
+      }catch(error) {
+        console.error(error.message)
+        Toast.fire({
+          icon: 'error',
+          title: '無法取得餐廳資料，請稍後再試'
+        })
       }
     }
   },

@@ -8,7 +8,7 @@ export default {
   categories: {
     get() {
       return apiHelper.get('/admin/categories', {
-        header: {
+        headers: {
           Authorization: `Bearer ${getToken()}`
         }
       })
@@ -17,24 +17,24 @@ export default {
   restaurants: {
     // 取得餐廳的詳細資料
     getDetail({restaurantId}){
-      return apiHelper.get(`admin/restaurants/${restaurantId}`, {
-        header: {
+      return apiHelper.get(`/admin/restaurants/${restaurantId}`, {
+        headers: {
           Authorization: `Bearer ${getToken()}`
         }
       })
     },
     // formData 可以把整個表單的內容打包
     create({formData}){
-      return apiHelper.post('admin/restaurants', formData, {
-        header: {
+      return apiHelper.post('/admin/restaurants', formData, {
+        headers: {
           Authorization: `Bearer ${getToken()}`
         }
       })
     },
     // 更新資料要用put
     update({restaurantId, formData}){
-      return apiHelper.put(`admin/restaurants/${restaurantId}`,formData,{
-        header: {
+      return apiHelper.put(`/admin/restaurants/${restaurantId}`,formData,{
+        headers: {
           Authorization: `Bearer ${getToken()}`
         }
       })

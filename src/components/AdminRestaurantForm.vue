@@ -100,8 +100,8 @@
     <button 
       type="submit" 
       class="btn btn-primary"
-      disabled="isProcessing"
-    >{{isProcesing? '處理中...' : '送出'}}</button>
+      :disabled="isProcessing"
+    >{{isProcessing? '處理中...' : '送出'}}</button>
   </form>
 </template>
 
@@ -155,11 +155,23 @@ export default {
       ...this.initialRestaurant
     }
   },
+  watch:{
+    // 監聽可以放兩個參數：newValue(改變後的值), oldValue(改變前的值)
+    initialRestaurant(newValue,oldValue) {
+      console.log({
+        newValue,
+        oldValue
+      })
+      this.restaurant = {
+        ...this.restaurant,
+        ...newValue
+      }
+    }
+  },
   methods: {
     async fetchCategories(){
       try{
-        const { data } = adminAPI.categories.get()
-
+        const { data } = await adminAPI.categories.get()
         if(data.status === 'error'){
           throw new Error(data.message)
         }
@@ -189,13 +201,13 @@ export default {
       
     },
     handleSubmit(e) {
-      if(!this.restaurants.name){
+      if(!this.restaurant.name){
         Toast.fire({
           icon: 'warning',
           title: '請填寫餐廳名稱'
         })
         return
-      }else if(!this.restaurants.categoryId){
+      }else if(!this.restaurant.categoryId){
         Toast.fire({
           icon: 'warning',
           title: '請選擇餐廳類別'

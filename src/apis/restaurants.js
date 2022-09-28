@@ -3,6 +3,11 @@ import { apiHelper } from "./../utils/helpers";
 const getToken = () => localStorage.getItem('token')
 
 export default {
+  getRestaurant({restaurantId}){
+    return apiHelper.get(`/restaurants/${restaurantId}`,{
+      headers: { Authorization: `Bearer ${getToken()}`}
+    })
+  },
   //基本上使用這個方法已經可以撈到所有餐廳資料，還可以帶入參數
   getRestaurants({page, categoryId}){
     // 透過JS內建的方法來取得使用者給予的路由參數

@@ -3,11 +3,13 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
+import store from './store'
 
 Vue.config.productionTip = false
 
 new Vue({
   router,
+  store,
 
   // 網頁會透過App來產生內容，再灌入到id名為app的div裡面
   render: h => h(App)
