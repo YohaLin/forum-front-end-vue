@@ -12,65 +12,34 @@ export default {
   },
   // 取得特定使用者的資料
   get({userId}){
-    return apiHelper.get(`/users/${userId}`, {
-      headers: {
-        Authorization: `Bearer ${getToken()}`
-      }
-    })
+    return apiHelper.get(`/users/${userId}`)
   },
   // 新增用post
   addFavorite({restaurantId}) {
-    return apiHelper.post(`/favorite/${restaurantId}`, null, {
-      headers: {
-        Authorization: `Bearer ${getToken()}`
-      }
-    })
+    return apiHelper.post(`/favorite/${restaurantId}`)
   },
   // 刪除用delete
   deleteFavorite({restaurantId}) {
-    return apiHelper.delete(`/favorite/${restaurantId}`, {
-      headers: {
-        Authorization: `Bearer ${getToken()}`
-      }
-    })
+    console.log(restaurantId)
+    return apiHelper.delete(`/favorite/${restaurantId}`)
   },
   // 新增用post
   addLike({restaurantId}) {
-    return apiHelper.post(`/favorite/${restaurantId}`, null, {
-      headers: {
-        Authorization: `Bearer ${getToken()}`
-      }
-    })
+    return apiHelper.post(`/favorite/${restaurantId}`)
   },
   // 刪除用delete
   deleteLike({restaurantId}) {
-    return apiHelper.delete(`/favorite/${restaurantId}`, {
-      headers: {
-        Authorization: `Bearer ${getToken()}`
-      }
-    })
+    return apiHelper.delete(`/favorite/${restaurantId}`)
   },
   getTopUsers(){
-    return apiHelper.get('users/top', {
-      headers: {
-        Authorization: `Bearer ${getToken()}`
-      }
-    })
+    return apiHelper.get('users/top')
   },
   // 新增用post
   addFollowing({userId}) {
-    return apiHelper.post(`/following/${userId}`, null, {
-      headers: {
-        Authorization: `Bearer ${getToken()}`
-      }
-    })
+    return apiHelper.post(`/following/${userId}`)
   },
   // 刪除用delete
   deleteFollowing({userId}) {
-    return apiHelper.delete(`/following/${userId}`, {
-      headers: {
-        Authorization: `Bearer ${getToken()}`
-      }
-    })
+    return apiHelper.delete(`/following/${userId}`)
   },
 }

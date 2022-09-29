@@ -3,11 +3,26 @@ import Swal from 'sweetalert2'
 
 const baseURL = 'http://localhost:3000/api'
 
-// .create , .mixin都是客製化的設定
-// 建立baseURL，之後要取得API網址更簡潔
- export const apiHelper = axios.create({
+const axiosInstance = axios.create({
   baseURL
 })
+
+//在呼叫API之前就先驗證token
+axiosInstance.interceptors.request.use(config => {
+  // 從 localStorage 將 token 取出
+  const token = localStorage.getItem('token')
+
+  // 如果 token 存在的話，則帶入到 headers 當中
+  if (token) {
+    config.headers['Authorization'] = `Bearer ${token}`
+  }
+
+  return config
+}, err => Promise.reject(err))
+
+// .create , .mixin都是客製化的設定
+// 建立baseURL，之後要取得API網址更簡潔
+export const apiHelper = axiosInstance
 
 // 想取得API網址的寫法：axios.get('/restaurants')
 

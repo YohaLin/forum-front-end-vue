@@ -1,32 +1,33 @@
 <template>
-  <div class="container py-5">
-    <!-- 使用 NavTabs 元件 -->
-    <NavTabs />
+    <div class="container py-5">
+      <!-- 使用 NavTabs 元件 -->
+      <NavTabs />
 
-    <!-- 餐廳類別標籤 RestaurantsNavPills -->
-    <!-- 因為輸出的資料不改值，所以不用加上initial -->
-    <RestaurantsNavPills :categories="categories" />
+      <!-- 餐廳類別標籤 RestaurantsNavPills -->
+      <!-- 因為輸出的資料不改值，所以不用加上initial -->
+      <RestaurantsNavPills :categories="categories" />
 
-    <div class="row">
-      <!-- 餐廳卡片 RestaurantCard ，在vue中，tag也可以用v-for-->
-      <!-- 因為輸出的資料會改值(isFavorited, isLiked)，所以加上initial -->
-      <RestaurantCard
-        v-for="restaurant in restaurants"
-        :key="restaurant.id"
-        :initialRestaurant="restaurant"
+      <div class="row">
+        <!-- 餐廳卡片 RestaurantCard ，在vue中，tag也可以用v-for-->
+        <!-- 因為輸出的資料會改值(isFavorited, isLiked)，所以加上initial -->
+        <RestaurantCard
+          v-for="restaurant in restaurants"
+          :key="restaurant.id"
+          :initialRestaurant="restaurant"
+        />
+      </div>
+      <div v-if="restaurants.length < 1">此類別無餐廳資料</div>
+
+      <!-- 分頁標籤 RestaurantPagination -->
+      <RestaurantsPagination
+        v-if="totalPage.length > 1"
+        :current-page="currentPage"
+        :total-page="totalPage"
+        :previous-page="previousPage"
+        :next-page="nextPage"
+        :categoryId="categoryId"
       />
     </div>
-
-    <!-- 分頁標籤 RestaurantPagination -->
-    <RestaurantsPagination
-      v-if="totalPage.length > 1"
-      :current-page="currentPage"
-      :total-page="totalPage"
-      :previous-page="previousPage"
-      :next-page="nextPage"
-      :categoryId="categoryId"
-    />
-  </div>
 </template>
 
 <script>
@@ -111,6 +112,6 @@ export default {
         });
       }
     },
-  }
+  },
 };
 </script>

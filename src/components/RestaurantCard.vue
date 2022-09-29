@@ -25,6 +25,7 @@
         <!-- v-on綁定事件，為了保險起見，只要是瀏覽器的事件，都跟著串上 stop.prevent -->
         <button
           v-if="restaurant.isFavorited"
+          :disabled="isProcessing"
           @click.stop.prevent="deleteFavorite(restaurant.id)" 
           type="button"
           class="btn btn-danger btn-border favorite mr-2"
@@ -34,6 +35,7 @@
         <!-- 注意在 v-else 上沒有任何的標記，它必需要緊接在 v-if 之後使用 -->
         <button
           v-else
+          :disabled="isProcessing"
           @click.stop.prevent="addFavorite(restaurant.id)"
           type="button"
           class="btn btn-primary btn-border favorite mr-2"
@@ -44,6 +46,7 @@
         <!-- v-on綁定事件，為了保險起見，只要是瀏覽器的事件，都跟著串上 stop.prevent -->
         <button
           v-if="restaurant.isLiked" 
+          :disabled="isProcessing"
           @click.stop.prevent="deleteLike(restaurant.id)"
           type="button"
           class="btn btn-danger like mr-2"
@@ -53,6 +56,7 @@
         <!-- 注意在 v-else 上沒有任何的標記，它必需要緊接在 v-if 之後使用 -->
         <button
           v-else
+          :disabled="isProcessing"
           @click.stop.prevent="addLike(restaurant.id)"
           type="button"
           class="btn btn-primary like mr-2"
@@ -78,7 +82,8 @@ export default {
   // 把資料從props傳到data之後，資料就可以改變
   data(){
     return {
-      restaurant: this.initialRestaurant
+      restaurant: this.initialRestaurant,
+      isProcessing: false
     }
   },
   methods: {
@@ -86,6 +91,7 @@ export default {
       
       // isFavorited
       try{
+        this.isProcessing = true
         const { data } = await usersAPI.addFavorite({restaurantId})
         if(data.status === 'error') {
           throw new Error(data.message)
@@ -94,7 +100,9 @@ export default {
           ...this.restaurant, // 保留餐廳內原有資料
           isFavorited: true // 只改想改的地方
         }
+        this.isProcessing = false
       } catch(error){
+        this.isProcessing = false
         console.log('error', error)
         Toast.fire({
           icon: 'error',
@@ -105,6 +113,7 @@ export default {
     async deleteFavorite(restaurantId){
       // isFavorited
       try{
+        this.isProcessing = true
         const { data } = await usersAPI.deleteFavorite({restaurantId})
         if(data.status === 'error') {
           throw new Error(data.message)
@@ -113,7 +122,9 @@ export default {
           ...this.restaurant, // 保留餐廳內原有資料
           isFavorited: false // 只改想改的地方
         }
+        this.isProcessing = false
       } catch(error){
+        this.isProcessing = false
         console.log('error', error)
         Toast.fire({
           icon: 'error',
@@ -124,6 +135,7 @@ export default {
     async addLike(restaurantId){
       // isFavorited
       try{
+        this.isProcessing = true
         const { data } = await usersAPI.addLike({restaurantId})
         if(data.status === 'error') {
           throw new Error(data.message)
@@ -132,7 +144,9 @@ export default {
           ...this.restaurant, // 保留餐廳內原有資料
           isLiked: true // 只改想改的地方
         }
+        this.isProcessing = false
       } catch(error){
+        this.isProcessing = false
         console.log('error', error)
         Toast.fire({
           icon: 'error',
@@ -143,6 +157,7 @@ export default {
     async deleteLike(restaurantId){
       // isFavorited
       try{
+        this.isProcessing = true
         const { data } = await usersAPI.deleteLike({restaurantId})
         if(data.status === 'error') {
           throw new Error(data.message)
@@ -151,7 +166,9 @@ export default {
           ...this.restaurant, // 保留餐廳內原有資料
           isLiked: false // 只改想改的地方
         }
+        this.isProcessing = false
       } catch(error){
+        this.isProcessing = false
         console.log('error', error)
         Toast.fire({
           icon: 'error',
@@ -162,3 +179,34 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.badge.badge-secondary {
+  padding: 0;
+  margin: 8px 0;
+  color: #bd2333;
+  background-color: transparent;
+}
+
+.btn,
+.btn-border.btn:hover {
+  margin: 7px 14px 7px 0;
+}
+
+.card {
+  margin-bottom: 2rem !important;
+}
+.card-img-top {
+  background-color: #EFEFEF;
+}
+
+.card-body {
+  padding: 17.5px;
+}
+
+.card-footer {
+  padding: 9px 17.5px;
+  border-color: rgb(232, 232, 232);
+  background: white;
+}
+</style>
