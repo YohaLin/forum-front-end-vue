@@ -72,12 +72,6 @@ export default {
   methods: {
     async handleSubmit() {
       // 向後端伺服器驗證使用者資料，要寫一個方法來處理把資料送給後端，送給後端的資料要用JSON格式
-      // const data = JSON.stringify({
-      //   email: this.email,
-      //   password: this.password
-      // })
-      // console.log('data', data)
-
       try {
         // 如果 email 或 password 為空，則使用 Toast 提示
         if (!this.email || !this.password) {

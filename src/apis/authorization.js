@@ -1,3 +1,4 @@
+//  signIn, singnUp頁面都會從這邊抓資料
 import { apiHelper } from './../utils/helpers'
 
 export default {
@@ -7,6 +8,14 @@ export default {
     return apiHelper.post('/signin', {
       email,
       password
+    })
+  },
+  signUp({name, email, password, passwordCheck}){
+    return apiHelper.post('/signup', {
+      name, 
+      email, 
+      password, 
+      passwordCheck
     })
   }
 }
